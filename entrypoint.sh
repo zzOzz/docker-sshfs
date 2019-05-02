@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-
 # To debug, use this shebang: #!/bin/ash -x
 
 UID="${UID:-0}"
@@ -12,7 +11,7 @@ trap cleanup SIGHUP SIGINT SIGQUIT SIGABRT SIGTERM
 cleanup() {
   echo -n "Caught signal. Cleaning up now... "
   sync
-  umount -vl /mount
+  umount -vl /srv
   echo "Done!"
   exit 0
 }
@@ -30,7 +29,7 @@ then
           -o uid="$UID" \
           -o gid="$GID" \
           -o port="$PORT" \
-          "$@" /mount
+          "$@" /srv &
 else
     sshfs -f \
           -o reconnect \
@@ -44,5 +43,6 @@ else
           -o uid="$UID" \
           -o gid="$GID" \
           -o port="$PORT" \
-          "$@" /mount
+          "$@" /srv &
 fi
+/bin/parent caddy --conf /config/Caddyfile --log stdout --agree=$ACME_AGREE --root=/srv

@@ -1,0 +1,8 @@
+- sub: admin
+  claims:
+    role: admin
+- sub: lecture
+  claims:
+    role: lecture
+- claims:
+    role: read

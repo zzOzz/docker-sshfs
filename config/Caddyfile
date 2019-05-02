@@ -1,0 +1,40 @@
+http://0.0.0.0:2015 {
+  log stdout
+  root {$PWD}/
+  ext .html
+
+  #header /private Cache-Control "no-cache, no-store, must-revalidate"
+
+  jwt {
+    path /
+    redirect /login
+  }
+
+  login {
+        success_url /files
+        htpasswd file=/config/passwords
+        user_file /config/userfile.yml
+        # for testing, where no https is available, don't set the secure flag for the.
+        cookie_secure false
+  }
+  filter rule {
+    content_type text/html.*
+    search_pattern </html>
+    replacement @/config/script.html
+  }
+  #
+
+  #proxy /test 10.50.102.199:8000 {
+  proxy / 127.0.0.1:2000 {
+
+  }
+}
+
+http://127.0.0.1:2000 {
+  filebrowser / {
+      database          /config/filebrowser.db
+      #auth_method      json
+      auth_method       proxy
+      auth_header       Token-Claim-Role
+  }
+}
